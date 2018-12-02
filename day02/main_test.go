@@ -80,6 +80,22 @@ func Test_commonIDString(t *testing.T) {
 	}
 }
 
+func Test_onlyOneMismatch(t *testing.T) {
+	tests := []struct {
+		in     []string
+		expect bool
+	}{
+		{[]string{"fghij", "fguij"}, true},
+		{[]string{"fghij", "fhuij"}, false},
+	}
+	for i, test := range tests {
+		got := onlyOneMismatch(test.in[0], test.in[1])
+		if got != test.expect {
+			t.Errorf("#%d: expected %v, got %v", i, test.expect, got)
+		}
+	}
+}
+
 func Test_commonString(t *testing.T) {
 	tests := []struct {
 		in     []string

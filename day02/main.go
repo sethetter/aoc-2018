@@ -66,32 +66,35 @@ func hasSetOfN(in []byte, n int) bool {
 func commonIDString(ids []string) (string, error) {
 	idPair := make([]string, 2)
 	sort.Strings(ids)
-	for i, id := range ids {
+	for i, id1 := range ids {
 		for _, id2 := range ids[i+1:] {
-			mismatches := 0
-			for j, _ := range id {
-				if id[j] != id2[j] {
-					mismatches = mismatches + 1
-				}
-				if mismatches > 1 {
-					break
-				}
-			}
-			if mismatches == 1 {
-				idPair[0] = id
-				idPair[1] = id2
+			if onlyOneMismatch(id1, id2) {
+				idPair[0], idPair[1] = id1, id2
 				break
 			}
 		}
-		if idPair[0] != "" {
+		// Did we find our pair? Stop searching
+		if idPair[0] != "" || idPair[1] != "" {
 			break
 		}
 	}
-	if idPair[0] == "" {
+	if idPair[0] == "" || idPair[1] == "" {
 		return "", errors.New("Did not find ID pair")
 	}
-	fmt.Printf("%v\n", idPair)
 	return commonString(idPair[0], idPair[1]), nil
+}
+
+func onlyOneMismatch(id1, id2 string) bool {
+	mismatches := 0
+	for j, _ := range id1 {
+		if id1[j] != id2[j] {
+			mismatches = mismatches + 1
+		}
+		if mismatches > 1 {
+			break
+		}
+	}
+	return mismatches == 1
 }
 
 func commonString(s1, s2 string) string {
