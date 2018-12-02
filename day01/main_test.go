@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestParseLine(t *testing.T) {
+func TestParseChange(t *testing.T) {
 	test := []struct {
 		in       string
 		expected change
@@ -14,7 +14,7 @@ func TestParseLine(t *testing.T) {
 		{"-2", change{op: '-', val: 2}},
 	}
 	for i, test := range test {
-		c, err := parseLine(test.in)
+		c, err := parseChange(test.in)
 		if err != nil {
 			t.Errorf("%d, failed: %v", i, err)
 		}
@@ -35,7 +35,7 @@ func TestProcessChange(t *testing.T) {
 		{change{op: '-', val: 3}, 1, -2},
 	}
 	for i, test := range test {
-		err := processChange(&test.f, test.c)
+		err := applyChange(&test.f, test.c)
 		if err != nil {
 			t.Errorf("%d, failed: %v", i, err)
 		}

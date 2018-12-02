@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 var inFile *string = flag.String("input", "input.txt", "the input file")
@@ -17,8 +18,8 @@ func main() {
 		fail(err, "Couldn't read input file")
 	}
 
-	// Do something with in
-	fmt.Println(string(input))
+	lines := strings.Split(string(input), "\n")
+	lines = lines[0 : len(lines)-1] // Get rid of blank line
 }
 
 func fail(err error, msg string) {

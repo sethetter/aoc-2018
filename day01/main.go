@@ -22,31 +22,24 @@ func main() {
 
 	lines := strings.Split(string(input), "\n")
 
-	changes := make([]change, len(lines)-1)
-	for i, l := range lines {
-		if l == "" {
-			continue
-		}
-		change, err := parseLine(l)
-		if err != nil {
-			fail(err, "Error parsing number from input")
-		}
-		changes[i] = change
+	changes, err := parseChanges(lines)
+	if err != nil {
+		fail(err, "Error parsing lines")
 	}
 
 	// Part 1
 	var freq int
 	for _, change := range changes {
-		err := processChange(&freq, change)
+		err := applyChange(&freq, change)
 		if err != nil {
-			fail(err, "err")
+			fail(err, "Error processing changes")
 		}
 	}
 
 	// Part 2
 	firstRepeat, err := findFirstRepeat(changes)
 	if err != nil {
-		fail(err, "err")
+		fail(err, "Error finding first repeat")
 	}
 
 	fmt.Printf("Part 1: %v\n", freq)
@@ -58,7 +51,19 @@ type change struct {
 	val int
 }
 
-func parseLine(in string) (change, error) {
+func parseChanges(lines []string) ([]change, error) {
+	changes := make([]change, len(lines)-1)
+	for i, l := range lines {
+		change, err := parseChange(l)
+		if err != nil {
+			return nil, err
+		}
+		changes[i] = change
+	}
+	return changes, nil
+}
+
+func parseChange(in string) (change, error) {
 	val, err := strconv.Atoi(in[1:])
 	if err != nil {
 		return change{}, err
@@ -66,12 +71,7 @@ func parseLine(in string) (change, error) {
 	return change{op: in[0], val: val}, nil
 }
 
-func fail(err error, msg string) {
-	fmt.Fprintf(os.Stderr, msg+": %v\n", err)
-	os.Exit(1)
-}
-
-func processChange(f *int, c change) error {
+func applyChange(f *int, c change) error {
 	switch c.op {
 	case '+':
 		*f = *f + c.val
@@ -94,7 +94,7 @@ func findFirstRepeat(changes []change) (int, error) {
 			i = 0
 		}
 		history = append(history, freq)
-		err := processChange(&freq, changes[i])
+		err := applyChange(&freq, changes[i])
 		if err != nil {
 			return 0, err
 		}
@@ -105,4 +105,9 @@ func findFirstRepeat(changes []change) (int, error) {
 		}
 		i++
 	}
+}
+
+func fail(err error, msg string) {
+	fmt.Fprintf(os.Stderr, msg+": %v\n", err)
+	os.Exit(1)
 }
