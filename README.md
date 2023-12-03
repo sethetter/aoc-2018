@@ -1,0 +1,1 @@
+This has been consolidated into [sethetter/advent-of-code](https://github.com/sethetter/advent-of-code).
